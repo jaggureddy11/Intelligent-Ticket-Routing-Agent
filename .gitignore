@@ -1,0 +1,20 @@
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pytest cache
+.pytest_cache/
+
+# Local databases
+*.db
+ticket_routing.db
+
+# Environmental configurations
+.env
+.env.development
+.env.production
+
+# OS generated files
+.DS_Store
+Thumbs.db

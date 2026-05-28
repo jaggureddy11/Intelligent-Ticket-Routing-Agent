@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligent IT Support Ticket Routing Agent</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Montserrat:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Liquid Background Blobs -->
+  <div class="blob-bg blob1"></div>
+  <div class="blob-bg blob2"></div>
+
+  <!-- Login Screen Overlay -->
+  <div id="login-overlay" class="login-overlay">
+    <div class="login-card glass">
+      <div class="login-header">
+        <i class="fa-solid fa-shield-halved login-logo-icon"></i>
+        <h2>IT Support Flow Secure Portal</h2>
+        <p>IT Ticket Routing Authorization</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Corporate Email</label>
+          <input type="email" id="login-email" required placeholder="admin@company.com or expert@company.com">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+        <div id="login-error" class="login-error-msg">Invalid email or password</div>
+        <button type="submit" id="login-btn" class="gradient-btn">
+          <span>Authorize Access</span>
+          <i class="fa-solid fa-key"></i>
+        </button>
+        <div class="login-helper-box">
+          <p class="helper-title"><i class="fa-solid fa-circle-info"></i> Demo Credentials</p>
+          <div class="helper-row">
+            <span class="role-tag admin">Admin</span>
+            <span class="creds"><code>admin@company.com</code> / <code>admin123</code></span>
+          </div>
+          <div class="helper-row">
+            <span class="role-tag expert">Expert</span>
+            <span class="creds"><code>priya.sharma@company.com</code> / <code>expert123</code></span>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App Layout (Hidden until logged in) -->
+  <div class="app-container hidden" id="app-content">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="pulse-ring"></div>
+        <i class="fa-solid fa-robot logo-icon"></i>
+        <div>
+          <h1>IT Support Flow</h1>
+          <p class="subtitle">Intelligent IT Ticket Routing Agent</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <div id="hf-status-badge" class="status-badge fallback">
+          <i class="fa-solid fa-circle-nodes"></i>
+          <span id="hf-status-text">HF Connection Status</span>
+        </div>
+        <div class="time-display">
+          <i class="fa-regular fa-clock"></i>
+          <span id="live-time">00:00:00 UTC</span>
+        </div>
+        <div class="user-profile-widget" id="user-profile-widget">
+          <span class="user-greeting">Welcome, <strong id="user-display-name">-</strong> (<span id="user-display-role">-</span>)</span>
+          <button id="logout-btn" class="logout-btn" title="Sign Out">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Key Metrics Grid -->
+    <section class="metrics-grid" id="metrics-section">
+      <div class="metric-card glass">
+        <div class="metric-icon purple"><i class="fa-solid fa-ticket"></i></div>
+        <div class="metric-info">
+          <h3>Total Tickets</h3>
+          <p id="metric-total-tickets" class="value">-</p>
+        </div>
+        <div class="metric-glow purple"></div>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-icon green"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="metric-info">
+          <h3>SLA Compliance</h3>
+          <p id="metric-sla-compliance" class="value">-%</p>
+        </div>
+        <div class="metric-glow green"></div>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-icon blue"><i class="fa-solid fa-user-tie"></i></div>
+        <div class="metric-info">
+          <h3>Active Experts</h3>
+          <p id="metric-active-experts" class="value">-</p>
+        </div>
+        <div class="metric-glow blue"></div>
+      </div>
+      <div class="metric-card glass">
+        <div class="metric-icon yellow"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="metric-info">
+          <h3>SLA Breaches</h3>
+          <p id="metric-sla-breaches" class="value">-</p>
+        </div>
+        <div class="metric-glow yellow"></div>
+      </div>
+    </section>
+
+    <!-- Dashboard Core Content Layout -->
+    <main class="dashboard-body" id="dashboard-main">
+      <!-- Left Column: Forms & Controls (Admin Only) -->
+      <section class="body-left" id="panel-admin-only">
+        <!-- Ticket Intake Form -->
+        <div class="glass card form-container">
+          <div class="card-header">
+            <i class="fa-solid fa-file-signature"></i>
+            <h2>New Ticket Intake</h2>
+          </div>
+          <form id="ticket-form" novalidate>
+            <div class="form-group">
+              <div class="label-row">
+                <label for="title">Issue Summary</label>
+                <span class="char-counter" id="title-counter">0 / 255</span>
+              </div>
+              <input type="text" id="title" name="title" required placeholder="e.g., VPN connection failure on laptop" autocomplete="off">
+              <span class="error-msg" id="title-error">Please enter a summary (min 3 characters)</span>
+            </div>
+            <div class="form-group">
+              <div class="label-row">
+                <label for="description">Detailed Description</label>
+                <span class="char-counter" id="desc-counter">0 characters</span>
+              </div>
+              <textarea id="description" name="description" required placeholder="Describe the problem, troubleshooting steps already taken, and any errors encountered..." rows="4"></textarea>
+              <span class="error-msg" id="desc-error">Please enter a description (min 10 characters)</span>
+            </div>
+            <button type="submit" id="submit-ticket-btn" class="gradient-btn">
+              <span>Submit to Agent Pipeline</span>
+              <i class="fa-solid fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- Charts Dashboard -->
+        <div class="glass card charts-container">
+          <div class="card-header">
+            <i class="fa-solid fa-chart-simple"></i>
+            <h2>Real-time Analytics</h2>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-wrapper">
+              <h4>Categories Distribution</h4>
+              <div class="chart-box">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-wrapper border-top">
+              <h4>Expert Workload Balancing</h4>
+              <div class="chart-box">
+                <canvas id="workloadChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Center Column: Tickets Live Feed -->
+      <section class="body-center" id="panel-tickets-feed">
+        <div class="glass card feed-container">
+          <div class="card-header flex-header">
+            <div class="header-left">
+              <i class="fa-solid fa-tower-broadcast"></i>
+              <h2>Live Ticket Stream</h2>
+            </div>
+            <div class="feed-filters">
+              <button class="filter-pill active" data-filter="all">All</button>
+              <button class="filter-pill" data-filter="Assigned">Assigned</button>
+              <button class="filter-pill" data-filter="In Progress">In Progress</button>
+              <button class="filter-pill" data-filter="Resolved">Resolved</button>
+            </div>
+          </div>
+          
+          <!-- Advanced Search, Filtering, and Export Bar -->
+          <div class="feed-filter-bar">
+            <div class="search-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="feed-search" placeholder="Search title, details, expert..." autocomplete="off">
+              <button id="search-clear-btn" class="clear-btn" title="Clear Search">&times;</button>
+            </div>
+            <div class="select-filters">
+              <select id="filter-category" class="glass-select-sm">
+                <option value="">All Categories</option>
+                <option value="Network">Network</option>
+                <option value="Software">Software</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Cloud">Cloud</option>
+                <option value="General">General</option>
+              </select>
+              <select id="filter-priority" class="glass-select-sm">
+                <option value="">All Priorities</option>
+                <option value="High">High Priority</option>
+                <option value="Medium">Medium Priority</option>
+                <option value="Low">Low Priority</option>
+              </select>
+              <div class="export-actions">
+                <button id="export-csv-btn" class="export-pill-btn" title="Export as CSV">
+                  <i class="fa-solid fa-file-csv"></i> CSV
+                </button>
+                <button id="export-json-btn" class="export-pill-btn" title="Export as JSON">
+                  <i class="fa-solid fa-file-code"></i> JSON
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Expert Incoming Notifications Alert Stream -->
+          <div id="notifications-area" class="notifications-area hidden"></div>
+
+          <div id="tickets-list" class="tickets-feed">
+            <div class="loading-state">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+              <p>Connecting to pipeline stream...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Experts Registry (Admin Only) -->
+      <section class="body-right" id="panel-experts-list">
+        <div class="glass card experts-container">
+          <div class="card-header">
+            <i class="fa-solid fa-people-group"></i>
+            <h2>Expert Workloads</h2>
+          </div>
+          <div id="experts-list" class="experts-list">
+            <!-- Dynamically populated experts -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Agent Trace Audit Trail Modal -->
+  <div id="trace-modal" class="modal">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <div class="modal-title-area">
+          <i class="fa-solid fa-terminal modal-icon"></i>
+          <div>
+            <h2 id="modal-ticket-title">Ticket Title</h2>
+            <p id="modal-ticket-meta">Ticket Meta</p>
+          </div>
+        </div>
+        <button id="close-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="description-block">
+          <h4>Description</h4>
+          <p id="modal-ticket-desc">Description text</p>
+        </div>
+        <!-- Expert AI Assist Block -->
+        <div id="modal-ai-assist-block" class="ai-assist-block"></div>
+        <div class="audit-block">
+          <h4>Agent Pipeline Audit Trace</h4>
+          <div id="audit-timeline" class="timeline">
+            <!-- Dynamically populated trace logs -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Custom Message Ping Modal -->
+  <div id="ping-modal" class="modal">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <div class="modal-title-area">
+          <i class="fa-solid fa-paper-plane modal-icon"></i>
+          <div>
+            <h2>Ping Expert</h2>
+            <p id="ping-expert-name">Send alert message to Expert</p>
+          </div>
+        </div>
+        <button id="close-ping-modal-btn" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="ping-form">
+          <input type="hidden" id="ping-expert-id">
+          <div class="form-group">
+            <label for="ping-message">Custom Message</label>
+            <textarea id="ping-message" required placeholder="Type custom message to send to this expert..." rows="4"></textarea>
+          </div>
+          <button type="submit" class="gradient-btn">
+            <span>Send Notification Ping</span>
+            <i class="fa-solid fa-bell"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- JavaScript SPA App -->
+  <script src="app.js"></script>
+</body>
+</html>
