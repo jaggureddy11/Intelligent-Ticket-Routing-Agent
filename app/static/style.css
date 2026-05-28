@@ -57,6 +57,7 @@ h1, h2, h3, h4, h5, h6, .value, .login-header h2 {
 
 /* Liquid Background Blobs */
 .blob-bg {
+  display: none;
   position: fixed;
   border-radius: 50%;
   filter: blur(100px);
@@ -436,7 +437,7 @@ h1, h2, h3, h4, h5, h6, .value, .login-header h2 {
   border: none;
   border-radius: 8px;
   padding: 0.85rem;
-  color: #fff;
+  color: #060709;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -447,13 +448,13 @@ h1, h2, h3, h4, h5, h6, .value, .login-header h2 {
   min-height: 48px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 4px 15px var(--primary-glow);
   transition: all 0.3s ease;
 }
 
 .gradient-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
 }
 
 .gradient-btn:active {
@@ -521,7 +522,7 @@ h1, h2, h3, h4, h5, h6, .value, .login-header h2 {
 
 .filter-pill.active {
   background: var(--primary);
-  color: #fff;
+  color: #060709;
   border-color: var(--primary);
   box-shadow: 0 0 10px var(--primary-glow);
 }
